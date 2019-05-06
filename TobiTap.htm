@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+
+    <script src="TobiTap-Dateien/jquery-1.js" type="text/javascript"></script>
+    <script src="TobiTap-Dateien/shortcut.js" type="text/javascript"></script>
+    <title>TobiTap - Tap a beat to determine a song's tempo in BPM (beats per minute) </title>
+    <meta name="description" content="TobiTap - Tap a beat to determine the BPM (beats per minute) of a song's tempo.">
+    <meta name="keywords" content="tobi tap,tempo tapper,tempo,beats,bpm,bpm tap,bpm tapper,song,music,metronome">
+    <link href="TobiTap-Dateien/styles.css" type="text/css" rel="stylesheet">
+
+    <script type="text/javascript">
+        var startTime = null;
+        var currentBeats = 0;
+
+        /*
+        $(window).keypress(function(event) {
+            var spaceBarKey = 32;
+            var lowerXKey = 120;
+            var upperXKey = 88;
+
+            var result = true;
+
+            var keyCode = event.which;
+
+            //if (!(event.which == 115 && event.ctrlKey)) return true;
+                //alert(keyCode);
+
+            if (keyCode == spaceBarKey) {
+                handleNewBeat();
+                result = false;
+            } else if ((keyCode == lowerXKey) || (keyCode == upperXKey)) {
+                handleBeat();
+                result = false;
+            }
+
+            if (!result) {
+                event.preventDefault();
+            }
+            return result;
+        });
+        */
+
+        function handleNewBeat() {
+            if (currentBeats == 0) {
+                startTime = new Date();
+            }
+            currentBeats++;
+            updateBpm();
+        }
+
+        function handleReset() {
+            startTime = null;
+            currentBeats = 0;
+            updateBpm();
+        }
+
+        function updateBpm() {
+            var value = '&nbsp;';
+            var title = 'BPM';
+
+	// if currentbeats >10 then use round-robin buffer entry
+
+            if (currentBeats > 1) {
+                var now = new Date();
+                var miliseconds = now.getTime() - startTime.getTime();
+                var minutes = miliseconds / 60000.0;
+                var bpm = (currentBeats - 1) / minutes;
+                value = bpm.toFixed(2);
+		// if >10 then "using last 10 out of X beats"
+                title = 'BPM (' + currentBeats.toString() + ' beats)';
+            } else if (currentBeats == 1) {
+                title = 'BPM (1 beat)';
+            }
+            $('#divBpm').html(value); 
+            $('#divBpmTitle').html(title);
+        }
+
+        shortcut.add(" ",function() {
+            handleNewBeat();
+        });
+        shortcut.add("x",function() {
+            handleReset();
+        });
+        shortcut.add("Shift+x",function() {
+            handleReset();
+        });
+
+    </script>
+
+</head>
+<body>
+    <div id="divMain">
+        <h1>Tobi Tap</h1>
+        <h2>Determine the BPM of a song's tempo.</h2>
+        <p>
+            Use the <strong>space bar</strong> to tap each beat.  The BPM (beats per minute) will be automatically computed to determine the tempo
+            of a song.  It will use a rolling average to track changes of tempo during a song.
+        </p>
+        <p> <strong>Press X</strong> to reset and start over.</p>
+        <p>Note: If are using a touchscreen device such as a tablet or smartphone, please touch in 
+        <input value="this box" style="width: 60px;" type="text"> to load the keyboard and start tapping the tempo.
+        </p>
+
+        <div id="divBpmTitle">BPM</div>
+        <div id="divBpm">&nbsp;</div>
+    </div>
+
+
+</body></html>

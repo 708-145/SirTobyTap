@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+
+	<script src="SirTobyTap_files/jquery-1.js" type="text/javascript">
+	
+	</script>
+    <script src="SirTobyTap_files/shortcut.js" type="text/javascript">
+	
+	</script>
+    
+	<title>SirTobyTap - Tap a beat to determine a song's tempo in BPM (beats per minute) </title>
+    <meta name="description" content="SirTobyTap - Tap a beat to determine the BPM (beats per minute) of a song's tempo.">
+    <meta name="keywords" content="sir toby tap,tempo tapper,tempo,beats,bpm,bpm tap,bpm tapper,song,music,metronome">
+    <link href="SirTobyTap_files/styles.css" type="text/css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        var startTime = null;
+        var currentBeats = 0;
+		var rollingTime = new Array();
+
+        function handleNewBeat() {
+			currentTime = new Date();
+            if (currentBeats == 0) {
+                startTime = currentTime;
+            }
+			rollingTime[currentBeats % 10] = currentTime;
+            currentBeats++;
+            updateBpm();
+        }
+
+        function handleReset() {
+            startTime = null;
+            currentBeats = 0;
+            updateBpm();
+        }
+
+        function updateBpm() {
+            var value = '&nbsp;';
+            var title = 'BPM';
+            var valueAvg = '&nbsp;';
+            var titleAvg = 'BPM';
+
+            if (currentBeats > 1) {
+                var now = new Date();
+                var milliseconds = now.getTime() - startTime.getTime();
+                var minutes = milliseconds / 60000.0;
+                var bpm = (currentBeats - 1) / minutes;
+				var millisecondsAvg = milliseconds;
+				// millisecondsAvg = now.getTime() - (rollingTime[currentBeats % 10]).getTime();
+                var minutesAvg = millisecondsAvg / 60000.0;
+				var bpmAvg = ( 10 ) / minutesAvg;
+                value = bpm.toFixed(2) + '<br>(' + bpm.toFixed(0) + ' BPM)<br>(' + (bpm/4).toFixed(0) + ' TPM)';
+                title = 'BPM (' + currentBeats.toString() + ' beats)';
+				if (currentBeats > 10) {
+				  valueAvg = bpmAvg.toFixed(2) + '<br>(' + bpmAvg.toFixed(0) + ' BPM)<br>(' + (bpmAvg/4).toFixed(0) + ' TPM)';
+				  titleAvg = 'BPM (average of last 10 beats)';
+				}
+				} else if (currentBeats == 1) {
+                title = 'BPM (1 beat)';
+            }
+            $('#divBpm').html(value); 
+            $('#divBpmTitle').html(title);
+            $('#divBpmAvg').html(valueAvg); 
+            $('#divBpmTitleAvg').html(titleAvg);
+        }
+
+        shortcut.add(" ",function() {
+            handleNewBeat();
+        });
+        shortcut.add("x",function() {
+            handleReset();
+        });
+        shortcut.add("Shift+x",function() {
+            handleReset();
+        });
+
+    </script>
+
+</head>
+
+<body>
+    <div id="divMain">
+        <h1>Sir Toby Tap</h1>
+        <h2>Determine the BPM of a song's tempo.</h2>
+        <p>
+            Use the <strong>space bar</strong> to tap each beat.  The BPM (beats per minute) will be automatically computed to determine the tempo
+            of a song. It will use a rolling average to track changes of tempo during a song.
+        </p>
+        <p> <strong>Press X</strong> to reset and start over.</p>
+        <p>Note: If are using a touchscreen device such as a tablet or smartphone, please touch in 
+        <input value="this box" style="width: 60px;" type="text"> to load the keyboard and start tapping the tempo.
+        </p>
+
+        <div id="divBpmTitle">BPM (52 beats)</div>
+        <div id="divBpm">155.88<br>(156 BPM)<br>(39 TPM)</div>
+		<p>
+        </p><div id="divBpmTitleAvg">BPM (average of last 10 beats)</div>
+        <div id="divBpmAvg">30.57<br>(31 BPM)<br>(8 TPM)</div>
+		<p></p>
+    </div>
+
+</body></html>
